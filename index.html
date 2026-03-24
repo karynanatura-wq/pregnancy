@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Strona Mobilna</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #FFC0CB;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #loader {
+            animation: spin 1.5s linear infinite;
+            width: 70vw;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(-360deg); }
+        }
+
+        #content {
+            display: none;
+            height: 30vh;
+            opacity: 0;
+            transition: opacity 0.4s ease-out;
+            z-index: 5;
+        }
+
+        /* Kontener zewnętrzny - odpowiada za ruch góra-dół (Y) */
+        .confetti-wrapper {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            z-index: 100;
+            pointer-events: none;
+            animation: moveY var(--duration) cubic-bezier(0.3, 0, 0.7, 1) forwards;
+        }
+
+        /* Kontener wewnętrzny - odpowiada za ruch lewo-prawo (X) i kolor */
+        .confetti-bit {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            animation: moveX var(--duration) linear forwards;
+        }
+
+        @keyframes moveY {
+            0% { transform: translateY(0); }
+            30% { transform: translateY(var(--jump)); } /* Wystrzał w górę */
+            100% { transform: translateY(100vh); } /* Opadanie poza ekran */
+        }
+
+        @keyframes moveX {
+            0% { transform: translateX(0) rotate(0deg); }
+            100% { transform: translateX(var(--distance)) rotate(var(--rotation)); }
+        }
+    </style>
+</head>
+<body>
+
+    <img src="loading.png" id="loader" alt="Ładowanie...">
+    <img src="test.png" id="content" alt="Widok docelowy">
+
+    <script>
+        setTimeout(function() {
+            const loader = document.getElementById('loader');
+            const content = document.getElementById('content');
+
+            loader.style.display = 'none';
+            content.style.display = 'block';
+            setTimeout(() => { content.style.opacity = '1'; }, 20);
+
+            const colors = ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFA500', '#FFFFFF'];
+
+            for (let i = 0; i < 200; i++) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'confetti-wrapper';
+
+                const bit = document.createElement('div');
+                bit.className = 'confetti-bit';
+
+                // Parametry fizyki
+                const duration = 2.5 + Math.random() * 1.5;
+                const jump = -130 - Math.random() * 200; // Siła wystrzału w górę
+                const distance = (Math.random() - 0.5) * window.innerWidth * 2; // Rozrzut X
+                const rotation = (Math.random() * 1000) - 500;
+
+                wrapper.style.setProperty('--duration', `${duration}s`);
+                wrapper.style.setProperty('--jump', `${jump}px`);
+                bit.style.setProperty('--distance', `${distance}px`);
+                bit.style.setProperty('--rotation', `${rotation}deg`);
+                bit.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+                wrapper.appendChild(bit);
+                document.body.appendChild(wrapper);
+
+                setTimeout(() => wrapper.remove(), duration * 1000);
+            }
+        }, 4000);
+    </script>
+
+</body>
+</html>
